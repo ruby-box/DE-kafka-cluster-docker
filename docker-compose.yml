@@ -1,0 +1,160 @@
+# https://confluence.wemakeprice.com/pages/viewpage.action?pageId=257084222
+---
+version: '2'
+ 
+services:
+ 
+  # wurstmeister/zookeeper:latest
+  zookeeper:
+    hostname: zookeeper
+    container_name: zookeeper
+    image: wurstmeister/zookeeper:latest
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper-1-data:/data
+      - zookeeper-1-datalog:/datalog
+ 
+  # wurstmeister/kafka:2.13-2.8.1 - broker 1
+  kafka1:
+    hostname: kafka1
+    container_name: kafka1
+    image: wurstmeister/kafka:2.13-2.8.1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "test1:2:3"
+      BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    ports:
+      - "19092:9092"
+    volumes:
+      - kafka1-data:/var/lib/kafka/data
+      # - kafka1-secrets:/etc/kafka/secrets
+      # - kafka1-kafka:/kafka
+    depends_on:
+      - zookeeper
+ 
+  # wurstmeister/kafka:2.13-2.8.1 - broker 2
+  kafka2:
+    hostname: kafka2
+    container_name: kafka2
+    image: wurstmeister/kafka:2.13-2.8.1
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "test2:2:3"
+      BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://localhost:19093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://localhost:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    ports:
+      - "19093:9092"
+    volumes:
+      - kafka2-data:/var/lib/kafka/data
+      # - kafka2-secrets:/etc/kafka/secrets
+      # - kafka2-kafka:/kafka
+    depends_on:
+      - zookeeper
+ 
+  # wurstmeister/kafka:2.13-2.8.1 - broker 3
+  kafka3:
+    hostname: kafka3
+    container_name: kafka3
+    image: wurstmeister/kafka:2.13-2.8.1
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "test3:2:3"
+      BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka3:9092,PLAINTEXT_HOST://localhost:19094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9092,PLAINTEXT_HOST://localhost:19094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    ports:
+      - "19094:9092"
+    volumes:
+      - kafka3-data:/var/lib/kafka/data
+      # - kafka3-secrets:/etc/kafka/secrets
+      # - kafka3-kafka:/kafka
+    depends_on:
+      - zookeeper
+ 
+  # wurstmeister/kafka:2.13-2.8.1 - broker 4
+  kafka4:
+    hostname: kafka4
+    container_name: kafka4
+    image: wurstmeister/kafka:2.13-2.8.1
+    environment:
+      KAFKA_BROKER_ID: 4
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "test4:2:3"
+      BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka4:9092,PLAINTEXT_HOST://localhost:19095
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka4:9092,PLAINTEXT_HOST://localhost:19095
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    ports:
+      - "19095:9092"
+    volumes:
+      - kafka4-data:/var/lib/kafka/data
+      # - kafka4-secrets:/etc/kafka/secrets
+      # - kafka4-kafka:/kafka
+    depends_on:
+      - zookeeper
+ 
+  # wurstmeister/kafka:2.13-2.8.1 - broker 5
+  kafka5:
+    hostname: kafka5
+    container_name: kafka5
+    image: wurstmeister/kafka:2.13-2.8.1
+    environment:
+      KAFKA_BROKER_ID: 5
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "test5:2:3"
+      BOOTSTRAP_SERVERS: kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://kafka5:9092,PLAINTEXT_HOST://localhost:19096
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka5:9092,PLAINTEXT_HOST://localhost:19096
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    ports:
+      - "19096:9092"
+    volumes:
+      - kafka5-data:/var/lib/kafka/data
+      # - kafka5-secrets:/etc/kafka/secrets
+      # - kafka5-kafka:/kafka
+    depends_on:
+      - zookeeper
+  
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8081:8080
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+      - kafka4
+      - kafka5
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-kafka-1
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092,kafka5:9092
+      #KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      #KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schemaregistry0:8085
+      #KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: first
+      #KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect0:8083
+      DYNAMIC_CONFIG_ENABLED: 'true'
+
+volumes:
+  zookeeper-1-data:
+  zookeeper-1-datalog:
+  kafka1-data:
+  kafka2-data:
+  kafka3-data:
+  kafka4-data:
+  kafka5-data:
